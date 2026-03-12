@@ -1,0 +1,46 @@
+# ======================================================================================
+# HOW TO REUSE THIS IN OTHER REPOSITORIES:
+# 1. Create a file like this (e.g., .github/workflows/deploy.yml) in your target repo.
+# 2. Update the 'uses' field below to point to your central repo:
+#    Syntax: <ORG_OR_USER>/<REPO_NAME>/.github/workflows/reusable-pipeline.yml@<BRANCH_OR_TAG>
+#    Example: uses: my-devops-org/central-workflows/.github/workflows/reusable-pipeline.yml@main
+# ======================================================================================
+
+name: Main CI/CD Pipeline
+
+on:
+  workflow_dispatch:
+    # This allows manual triggers from the GitHub Actions UI.
+    inputs:
+      environment:
+        description: 'Select Environment'
+        required: true
+        type: choice
+        options:
+          - dev
+          - uat
+          - prod
+        default: 'dev'
+
+jobs:
+  call-workflow:
+    # If this file is in the SAME repo, use the relative path below.
+    # If in a DIFFERENT repo, change this to: your-username/your-repo/.github/workflows/reusable-pipeline.yml@main
+    uses: ./.github/workflows/reusable-pipeline.yml
+    with:
+      # Pass the environment selected by the user in the UI.
+      environment: ${{ github.event.inputs.environment }}
+      
+      # Set your application specific details here.
+      image_name: 'my-python-app'
+      registry: 'ghcr.io'
+      
+      # Kubernetes specific configuration.
+      k8s_cluster: 'my-cluster'
+      k8s_namespace: '${{ github.event.inputs.environment }}-ns'
+      k8s_server: 'https://k8s-api.example.com'
+    secrets:
+      # These secrets must exist in the repository where this workflow is TRIGGERED.
+      REGISTRY_USERNAME: ${{ github.actor }}
+      REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
