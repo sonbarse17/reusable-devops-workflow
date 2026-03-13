@@ -32,8 +32,8 @@ jobs:
       environment: ${{ github.event.inputs.environment }}
       
       # Set your application specific details here.
-      image_name: 'my-python-app'
-      registry: 'ghcr.io'
+      image_name: 'my-docker-user/my-python-app'
+      registry: 'docker.io'
       
       # Deployment Configuration.
       deploy_method: 'kubectl' # Set to 'helm' to use Helm instead
