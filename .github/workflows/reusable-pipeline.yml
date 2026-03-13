@@ -88,20 +88,34 @@ jobs:
       - name: Prepare Docker Metadata
         id: meta
         run: |
-          # Use GHCR.IO by default if no registry provided
+          # 1. Handle Registry (Default to GHCR)
           REGISTRY="${{ inputs.registry }}"
           if [ -z "$REGISTRY" ]; then REGISTRY="ghcr.io"; fi
           
-          # Clean owner name and image name
+          # 2. Lowercase all variables for Docker compatibility
           OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          IMAGE=$(echo "${{ inputs.image_name }}" | tr '[:upper:]' '[:lower:]')
+          INPUT_IMAGE=$(echo "${{ inputs.image_name }}" | tr '[:upper:]' '[:lower:]')
+          REGISTRY_LC=$(echo "$REGISTRY" | tr '[:upper:]' '[:lower:]')
           
-          FULL_IMAGE_NAME="$REGISTRY/$OWNER/$IMAGE"
+          # 3. Intelligent Image Path Construction
+          if [[ "$REGISTRY_LC" == "ghcr.io" ]]; then
+            # For GHCR, we MUST include the owner
+            if [[ "$INPUT_IMAGE" == "$OWNER/"* ]]; then
+              FULL_IMAGE_NAME="$REGISTRY_LC/$INPUT_IMAGE"
+            else
+              FULL_IMAGE_NAME="$REGISTRY_LC/$OWNER/$INPUT_IMAGE"
+            fi
+          else
+            # For Docker Hub or other registries, use the image name exactly as provided
+            # Users can provide "username/app" or just "app"
+            FULL_IMAGE_NAME="$REGISTRY_LC/$INPUT_IMAGE"
+          fi
+          
           echo "tag_sha=$FULL_IMAGE_NAME:${{ github.sha }}" >> $GITHUB_OUTPUT
           echo "tag_env=$FULL_IMAGE_NAME:${{ inputs.environment }}" >> $GITHUB_OUTPUT
           
-          echo "Building for Registry: $REGISTRY"
-          echo "Image Name: $FULL_IMAGE_NAME"
+          echo "Final Image Path: $FULL_IMAGE_NAME"
+          echo "Registry: $REGISTRY_LC"
 
       - name: Setup Python
         uses: actions/setup-python@v5
