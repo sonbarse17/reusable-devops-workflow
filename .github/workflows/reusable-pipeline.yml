@@ -66,11 +66,10 @@ jobs:
   build:
     name: Build & Push
     runs-on: ubuntu-latest
-    # CRITICAL: Grant permission to push to GHCR/Packages
     permissions:
       contents: read
       packages: write
-      id-token: write # Needed for some OIDC providers
+      id-token: write
     steps:
       - name: Validate Branch and Environment Mapping
         run: |
