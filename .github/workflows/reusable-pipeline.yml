@@ -69,7 +69,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-      id-token: write
     steps:
       - name: Validate Branch and Environment Mapping
         run: |
