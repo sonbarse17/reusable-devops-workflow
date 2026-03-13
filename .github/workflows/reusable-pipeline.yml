@@ -66,6 +66,10 @@ jobs:
   build:
     name: Build & Push
     runs-on: ubuntu-latest
+    # CRITICAL: Grant permission to push to GHCR/Packages
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Validate Branch and Environment Mapping
         run: |
@@ -111,8 +115,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ inputs.registry }}/${{ inputs.image_name }}:${{ github.sha }}
-            ${{ inputs.registry }}/${{ inputs.image_name }}:${{ inputs.environment }}
+            ${{ inputs.registry }}/${{ github.repository_owner }}/${{ inputs.image_name }}:${{ github.sha }}
+            ${{ inputs.registry }}/${{ github.repository_owner }}/${{ inputs.image_name }}:${{ inputs.environment }}
 
   deploy:
     name: K8s Deploy to ${{ inputs.environment }}
