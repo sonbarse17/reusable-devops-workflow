@@ -8,7 +8,7 @@ A high-performance, strictly-validated GitHub Actions workflow designed to build
     *   `main` branch ➔ **UAT**
     *   `feature/*` branch ➔ **Development**
 *   **Optimized Build Engine**: Uses latest stable actions with native caching for Python (`pip`) and Docker (`buildx`).
-*   **Kubernetes Ready**: Automated context setup and rollout verification.
+*   **Kubernetes Ready**: Supports both **Standard Manifests (kubectl)** and **Helm Charts**.
 *   **Modular & Reusable**: Can be used by any repository in your organization.
 
 ## 📂 Project Structure

@@ -35,10 +35,17 @@ jobs:
       image_name: 'my-python-app'
       registry: 'ghcr.io'
       
+      # Deployment Configuration.
+      deploy_method: 'kubectl' # Set to 'helm' to use Helm instead
+      
       # Kubernetes specific configuration.
       k8s_cluster: 'my-cluster'
       k8s_namespace: '${{ github.event.inputs.environment }}-ns'
       k8s_server: 'https://k8s-api.example.com'
+      
+      # Helm specific configuration (only used if deploy_method is 'helm').
+      # helm_chart_path: './charts/my-app'
+      # helm_release_name: 'my-app-release'
     secrets:
       # These secrets must exist in the repository where this workflow is TRIGGERED.
       REGISTRY_USERNAME: ${{ github.actor }}
